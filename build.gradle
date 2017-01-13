@@ -1,52 +1,22 @@
-group 'SoapWebServiseProj'
-version '1.0-SNAPSHOT'
-
-sourceCompatibility = 1.8
-
 buildscript {
     repositories {
-        mavenLocal()
         mavenCentral()
-        maven { url "https://repo.spring.io/libs-release" }
     }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.1.9.RELEASE")
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.4.3.RELEASE")
     }
 }
 
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
-apply plugin: 'spring-boot'
-
-configurations {
-    jaxb
-}
-
-jar {
-    baseName = 'gs-producing-web-service'
-    version =  '0.1.0'
-    from genJaxb.classesDir
-}
+apply plugin: 'org.springframework.boot'
 
 repositories {
-    mavenLocal()
     mavenCentral()
-    maven { url "https://repo.spring.io/libs-release" }
 }
 
-dependencies {
-    compile("org.springframework.boot:spring-boot-starter-web")
-    compile("org.springframework.boot:spring-boot-starter-ws")
-    compile("wsdl4j:wsdl4j:1.6.1")
-    jaxb("com.sun.xml.bind:jaxb-xjc:2.2.4-1")
-    compile(files(genJaxb.classesDir).builtBy(genJaxb))
-}
-
-task wrapper(type: Wrapper) {
-    gradleVersion = '1.11'
-}
-
+// tag::xsd[]
 task genJaxb {
     ext.sourcesDir = "${buildDir}/generated-sources/jaxb"
     ext.classesDir = "${buildDir}/classes/jaxb"
@@ -82,3 +52,34 @@ task genJaxb {
         }
     }
 }
+// end::xsd[]
+
+task afterEclipseImport {
+    dependsOn "genJaxb"
+}
+
+// tag::jaxb[]
+configurations {
+    jaxb
+}
+
+jar {
+    baseName = 'gs-producing-web-service'
+    version =  '0.1.0'
+    from genJaxb.classesDir
+}
+
+// tag::dependencies[]
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+dependencies {
+    compile("org.springframework.boot:spring-boot-starter-ws")
+    testCompile("org.springframework.boot:spring-boot-starter-test")
+    compile("wsdl4j:wsdl4j:1.6.1")
+    jaxb("com.sun.xml.bind:jaxb-xjc:2.2.4-1")
+    compile(files(genJaxb.classesDir).builtBy(genJaxb))
+}
+// end::dependencies[]
+// end::jaxb[]
+
