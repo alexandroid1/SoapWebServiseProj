@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package ua.alexandroid1.alex;
+package hello;
 
 import io.spring.guides.gs_producing_web_service.GetCountryRequest;
 import org.junit.Before;
